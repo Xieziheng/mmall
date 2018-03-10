@@ -1,0 +1,91 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="greenhouse:war exploded">
+    <output-path>$PROJECT_DIR$/../greenhouse/target/greenhouse-1.0.0.BUILD-SNAPSHOT</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="greenhouse" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.springframework:spring-context:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-aop:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-beans:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-core:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-expression:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-asm:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-jdbc:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-tx:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-context-support:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-web:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-core:3.1.0.RELEASE" />
+          <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
+          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-crypto:3.1.0.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-web:3.1.0.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-taglibs:3.1.0.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-acl:3.1.0.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.security:spring-security-config:3.1.0.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.security.oauth:spring-security-oauth2:1.0.0.RC2" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.3" />
+          <element id="library" level="project" name="Maven: org.springframework.integration:spring-integration-core:2.1.3.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.integration:spring-integration-http:2.1.3.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.integration:spring-integration-mail:2.1.3.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.integration:spring-integration-event:2.1.3.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.mobile:spring-mobile-device:1.0.0.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.social:spring-social-core:1.0.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.social:spring-social-web:1.0.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.social:spring-social-facebook:1.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.social:spring-social-facebook-web:1.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.social:spring-social-twitter:1.0.2.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.social:spring-social-linkedin:1.0.0.RC1" />
+          <element id="library" level="project" name="Maven: org.springframework.social:spring-social-tripit:1.0.0.M3" />
+          <element id="library" level="project" name="Maven: org.aspectj:aspectjrt:1.6.11" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-aspects:3.1.2.RELEASE" />
+          <element id="library" level="project" name="Maven: cglib:cglib-nodep:2.2" />
+          <element id="library" level="project" name="Maven: javax.inject:javax.inject:1" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.6.2" />
+          <element id="library" level="project" name="Maven: org.slf4j:jcl-over-slf4j:1.6.2" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.6.2" />
+          <element id="library" level="project" name="Maven: log4j:log4j:1.2.16" />
+          <element id="library" level="project" name="Maven: com.h2database:h2:1.3.160" />
+          <element id="library" level="project" name="Maven: com.google.guava:guava:10.0.1" />
+          <element id="library" level="project" name="Maven: com.google.code.findbugs:jsr305:1.3.9" />
+          <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpclient:4.1.2" />
+          <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpcore:4.1.2" />
+          <element id="library" level="project" name="Maven: javax.mail:mail:1.4.1" />
+          <element id="library" level="project" name="Maven: javax.activation:activation:1.1" />
+          <element id="library" level="project" name="Maven: org.antlr:stringtemplate:3.2.1" />
+          <element id="library" level="project" name="Maven: antlr:antlr:2.7.7" />
+          <element id="library" level="project" name="Maven: javax.servlet.jsp.jstl:jstl-api:1.2" />
+          <element id="library" level="project" name="Maven: org.glassfish.web:jstl-impl:1.2" />
+          <element id="library" level="project" name="Maven: org.apache.tiles:tiles-jsp:2.2.2" />
+          <element id="library" level="project" name="Maven: org.apache.tiles:tiles-servlet:2.2.2" />
+          <element id="library" level="project" name="Maven: org.apache.tiles:tiles-template:2.2.2" />
+          <element id="library" level="project" name="Maven: org.apache.tiles:tiles-api:2.2.2" />
+          <element id="library" level="project" name="Maven: org.apache.tiles:tiles-el:2.2.2" />
+          <element id="library" level="project" name="Maven: org.apache.tiles:tiles-core:2.2.2" />
+          <element id="library" level="project" name="Maven: commons-digester:commons-digester:2.0" />
+          <element id="library" level="project" name="Maven: commons-beanutils:commons-beanutils:1.8.0" />
+          <element id="library" level="project" name="Maven: javax.validation:validation-api:1.0.0.GA" />
+          <element id="library" level="project" name="Maven: org.hibernate:hibernate-validator:4.2.0.Final" />
+          <element id="library" level="project" name="Maven: joda-time:joda-time:2.0" />
+          <element id="library" level="project" name="Maven: joda-time:joda-time-jsptags:1.1" />
+          <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.9" />
+          <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.9" />
+          <element id="library" level="project" name="Maven: commons-fileupload:commons-fileupload:1.2.2" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:1.4" />
+          <element id="library" level="project" name="Maven: net.java.dev.jets3t:jets3t:0.8.1" />
+          <element id="library" level="project" name="Maven: commons-httpclient:commons-httpclient:3.1" />
+          <element id="library" level="project" name="Maven: com.jamesmurty.utils:java-xmlbuilder:0.4" />
+          <element id="library" level="project" name="Maven: org.springframework.data:spring-data-redis:1.0.0.RC1" />
+          <element id="library" level="project" name="Maven: redis.clients:jedis:2.0.0" />
+          <element id="library" level="project" name="Maven: commons-pool:commons-pool:1.5.5" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/../greenhouse/target/greenhouse-1.0.0.BUILD-SNAPSHOT/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="greenhouse/web/Web" />
+    </root>
+  </artifact>
+</component>

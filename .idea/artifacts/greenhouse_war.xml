@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="greenhouse:war">
+    <output-path>$PROJECT_DIR$/../greenhouse/target</output-path>
+    <root id="archive" name="greenhouse-1.0.0.BUILD-SNAPSHOT.war">
+      <element id="artifact" artifact-name="greenhouse:war exploded" />
+    </root>
+  </artifact>
+</component>

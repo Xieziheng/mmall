@@ -155,11 +155,21 @@
     select count(1) from mmall_user
     where username = #{username}
     </select>
+    <select id="checkEmail" resultType="int" parameterType="string">
+    select count(1) from mmall_user
+    where email = #{email}
+    </select>
     <select id="selectLogin" resultMap="com.mmall.dao.UserMapper.BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List"/>
         from mmall_user
         where username = #{username}
         and password = #{password}
+    </select>
+    <select id="selectQuestionByUsername" resultType="string" parameterType="string">
+        select
+        question
+        from mmall_user
+        where username = #{username}
     </select>
 </mapper>

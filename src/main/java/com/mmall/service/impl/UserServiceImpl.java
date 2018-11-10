@@ -39,11 +39,11 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ServerResponse<String> register(User user) {
-        ServerResponse vaildResponse = checkVaild(user.getUsername(), Const.CHECK_USERNAME);
+        ServerResponse vaildResponse = checkValid(user.getUsername(), Const.CHECK_USERNAME);
         if(!vaildResponse.isSuccess()){
             return vaildResponse;
         }
-        vaildResponse = checkVaild(user.getEmail(), Const.CHECK_EMAIL);
+        vaildResponse = checkValid(user.getEmail(), Const.CHECK_EMAIL);
         if(!vaildResponse.isSuccess()){
             return vaildResponse;
         }
@@ -60,7 +60,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ServerResponse<String> checkVaild(String str, String type) {
+    public ServerResponse<String> checkValid(String str, String type) {
         if(StringUtils.isNoneBlank(type)){
             int resultCount;
             if(type.equals(Const.CHECK_EMAIL)){
@@ -84,7 +84,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ServerResponse<String> selectQuestion(String username) {
-        ServerResponse validResponse = this.checkVaild(username, Const.CHECK_USERNAME);
+        ServerResponse validResponse = this.checkValid(username, Const.CHECK_USERNAME);
         //todo 与gelly不一样的逻辑
         if(!validResponse.isSuccess()){
             return ServerResponse.createByErrorMessage("用户不存在");
@@ -114,7 +114,7 @@ public class UserServiceImpl implements IUserService {
         if(StringUtils.isBlank(forgetToken)){
             return ServerResponse.createByErrorMessage("参数错误，forgetToken为空");
         }
-        ServerResponse validResponse = this.checkVaild(username, Const.CHECK_USERNAME);
+        ServerResponse validResponse = this.checkValid(username, Const.CHECK_USERNAME);
         //todo 与gelly不一样的逻辑
         if(!validResponse.isSuccess()){
             return ServerResponse.createByErrorMessage("用户不存在");
@@ -134,5 +134,41 @@ public class UserServiceImpl implements IUserService {
             return ServerResponse.createByErrorMessage("token错误，请重新获取");
         }
         return ServerResponse.createByErrorMessage("修改密码失败");
+    }
+
+    @Override
+    public ServerResponse<String> resetPassword(String passwordOld, String passwordNew, User user) {
+        //防止横向越权
+        int resultCount = userMapper.checkPassword(MD5Util.MD5EncodeUtf8(passwordOld), user.getId());
+        if(resultCount == 0){
+            return ServerResponse.createByErrorMessage("原始密码输入错误");
+        }
+        user.setPassword(MD5Util.MD5EncodeUtf8(passwordNew));
+        int rowCount = userMapper.updateByPrimaryKeySelective(user);
+        if(rowCount > 0){
+            return ServerResponse.createBySuccessMessage("重置密码成功");
+        }
+        return ServerResponse.createByErrorMessage("重置密码失败");
+    }
+
+    @Override
+    public ServerResponse<User> updateInformation(User user) {
+        //email校验不能是已存在的
+        int resultCount = userMapper.checkEmailByUserId(user.getEmail(),user.getId());
+        if(resultCount>0){
+            return ServerResponse.createByErrorMessage("email已存在");
+        }
+        User updateUser = new User();
+        updateUser.setEmail(user.getEmail());
+        updateUser.setAnswer(user.getAnswer());
+        updateUser.setQuestion(user.getQuestion());
+        updateUser.setPhone(user.getPhone());
+        updateUser.setId(user.getId());
+
+        int updateCount = userMapper.updateByPrimaryKeySelective(updateUser);
+        if(updateCount>0){
+            return ServerResponse.createBySuccess("更新个人信息成功",updateUser);
+        }
+        return ServerResponse.createByErrorMessage("更新个人信息失败");
     }
 }

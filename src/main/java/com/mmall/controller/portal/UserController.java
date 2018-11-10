@@ -64,4 +64,16 @@ public class UserController {
     public ServerResponse<String> forgetGetQuestion(String username){
         return iUserService.selectQuestion(username);
     }
+
+    @RequestMapping(value = "forget_check_answer.do",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> forgetCheckAnswer(String username, String question, String answer){
+        return iUserService.checkAnswer(username,question,answer);
+    }
+
+    @RequestMapping(value = "forget_reset_password.do",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> forgetResetPassword(String username, String passwordNew, String forgetToken){
+        return iUserService.forgetResetPassword(username,passwordNew,forgetToken);
+    }
 }

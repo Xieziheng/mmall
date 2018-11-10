@@ -172,4 +172,16 @@
         from mmall_user
         where username = #{username}
     </select>
+    <select id="getAnswer" resultType="string" parameterType="map">
+        select
+        answer
+        from mmall_user
+        where username = #{username}
+        and question = #{question}
+    </select>
+    <update id="updatePasswordByUsername" parameterType="map">
+        update mmall_user
+        set password = #{passwordNew},update_time = now()
+        where username = #{username}
+    </update>
 </mapper>

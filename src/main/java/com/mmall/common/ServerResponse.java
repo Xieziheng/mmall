@@ -1,12 +1,18 @@
 package com.mmall.common;
 
-import com.mmall.service.impl.UserServiceImpl;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.io.Serializable;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+/**
+ *
+ * 好像是@JsonSerialize中的include属性过时了，null值也会序列化，换了@JsonInclude已经解决
+ * @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+ */
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 //保证在json序列化时，如果是null的对象，key也会消失
 public class ServerResponse<T> implements Serializable {
     private int status;

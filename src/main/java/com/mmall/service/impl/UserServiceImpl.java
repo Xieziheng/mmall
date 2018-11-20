@@ -64,7 +64,7 @@ public class UserServiceImpl implements IUserService {
         if(StringUtils.isNoneBlank(type)){
             int resultCount;
             if(type.equals(Const.CHECK_EMAIL)){
-                resultCount = userMapper.checkUsername(str);
+                resultCount = userMapper.checkEmail(str);
                 if(resultCount > 0){
                     return ServerResponse.createByErrorMessage("email已存在");
                 }
@@ -85,8 +85,8 @@ public class UserServiceImpl implements IUserService {
     @Override
     public ServerResponse<String> selectQuestion(String username) {
         ServerResponse validResponse = this.checkValid(username, Const.CHECK_USERNAME);
-        //todo 与gelly不一样的逻辑
-        if(!validResponse.isSuccess()){
+
+        if(validResponse.isSuccess()){
             return ServerResponse.createByErrorMessage("用户不存在");
         }
         String question = userMapper.selectQuestionByUsername(username);
@@ -115,8 +115,8 @@ public class UserServiceImpl implements IUserService {
             return ServerResponse.createByErrorMessage("参数错误，forgetToken为空");
         }
         ServerResponse validResponse = this.checkValid(username, Const.CHECK_USERNAME);
-        //todo 与gelly不一样的逻辑
-        if(!validResponse.isSuccess()){
+
+        if(validResponse.isSuccess()){
             return ServerResponse.createByErrorMessage("用户不存在");
         }
         String token = TokenCache.getKey(TokenCache.TOKEN_PREFIX+username);
@@ -180,5 +180,13 @@ public class UserServiceImpl implements IUserService {
         }
         user.setPassword(StringUtils.EMPTY);
         return ServerResponse.createBySuccess(user);
+    }
+
+    @Override
+    public ServerResponse<String> checkAdminRole(User user) {
+        if(user!=null && (user.getRole().intValue() == Const.Role.ROLE_ADMIN)){
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
     }
 }

@@ -1,19 +1,29 @@
 package com.mmall.controller.backend;
 
+import com.google.common.collect.Maps;
 import com.mmall.common.Const;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.Product;
 import com.mmall.pojo.User;
+import com.mmall.service.IFileService;
 import com.mmall.service.IProductService;
 import com.mmall.service.IUserService;
+import com.mmall.util.PropertiesUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/manage/product")
@@ -23,6 +33,8 @@ public class ProductManageController {
     IUserService iUserService;
     @Autowired
     IProductService iProductService;
+    @Autowired
+    IFileService iFileService;
 
     @RequestMapping("save.do")
     @ResponseBody
@@ -91,6 +103,59 @@ public class ProductManageController {
             return iProductService.searchProduct(productName,productId,pageNum,pageSize);
         }else {
             return ServerResponse.createByErrorMessage("用户没有权限");
+        }
+    }
+
+    @RequestMapping("upload.do")
+    @ResponseBody
+    public ServerResponse upload(HttpSession session, HttpServletRequest request,@RequestParam(value = "upload_file",required = false) MultipartFile file){
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if(user == null){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，请登录管理员");
+        }
+        if(iUserService.checkAdminRole(user).isSuccess()){
+            String path = request.getSession().getServletContext().getRealPath("upload");
+            String targetFileName = iFileService.upload(file,path);
+            String url = PropertiesUtil.getProperty("ftp.server.http.prefix")+targetFileName;
+
+            Map fileMap = Maps.newHashMap();
+            fileMap.put("uri",targetFileName);
+            fileMap.put("url",url);
+            return ServerResponse.createBySuccess(fileMap);
+        }else {
+            return ServerResponse.createByErrorMessage("用户没有权限");
+        }
+    }
+
+    @RequestMapping("richtext_img_upload.do")
+    @ResponseBody
+    public Map richtextImgUpload(HttpSession session, HttpServletRequest request, @RequestParam(value = "upload_file",required = false) MultipartFile file, HttpServletResponse response){
+        Map resultMap = Maps.newHashMap();
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if(user == null){
+            resultMap.put("success",false);
+            resultMap.put("msg","请登录账户");
+            return resultMap;
+        }
+        if(iUserService.checkAdminRole(user).isSuccess()){
+            String path = request.getSession().getServletContext().getRealPath("upload");
+            String targetFileName = iFileService.upload(file,path);
+            if(StringUtils.isBlank(targetFileName)){
+                resultMap.put("success",false);
+                resultMap.put("msg","上传失败");
+                return resultMap;
+            }
+            String url = PropertiesUtil.getProperty("ftp.server.http.prefix")+targetFileName;
+
+            resultMap.put("success",true);
+            resultMap.put("msg","上传成功");
+            resultMap.put("file_path", url);
+            response.addHeader("Access-Control-Allow-Headers","X-File-Name");
+            return resultMap;
+        }else {
+            resultMap.put("success",false);
+            resultMap.put("msg","没有权限");
+            return resultMap;
         }
     }
 

@@ -1,5 +1,6 @@
 package com.mmall.service.impl;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.mmall.common.Const;
 import com.mmall.common.ResponseCode;
@@ -46,8 +47,47 @@ public class CartServiceImpl implements ICartService {
             cart.setQuantity(count+cart.getQuantity());
             cartMapper.updateByPrimaryKeySelective(cart);
         }
+        return this.list(userId);
+    }
+
+    public ServerResponse<CartVo> update(Integer userId, Integer productId,Integer count){
+        if(productId == null || count == null){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_AUGUMENT.getCode(),ResponseCode.ILLEGAL_AUGUMENT.getDesc());
+        }
+        Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
+        if(cart!=null){
+            cart.setQuantity(count);
+        }
+        cartMapper.updateByPrimaryKeySelective(cart);
+        return this.list(userId);
+    }
+
+    public ServerResponse<CartVo> list(Integer userId) {
         CartVo cartVo = this.getCartVoLimit(userId);
         return ServerResponse.createBySuccess(cartVo);
+    }
+
+    @Override
+    public ServerResponse<CartVo> deleteProduct(Integer userId, String productIds) {
+        List<String> productList = Splitter.on(",").splitToList(productIds);
+        if(CollectionUtils.isEmpty(productList)){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_AUGUMENT.getCode(),ResponseCode.ILLEGAL_AUGUMENT.getDesc());
+        }
+        cartMapper.deleteByUserIdProductIds(userId,productList);
+        return this.list(userId);
+    }
+
+    public ServerResponse<CartVo> selectOrUnSelect(Integer userId, Integer checked, Integer productId){
+        cartMapper.checkedOrUnCheckedProduct(userId,checked,productId);
+        return this.list(userId);
+    }
+
+    public ServerResponse<Integer> selectCartProductCount(Integer userId) {
+        if(userId == null){
+            return ServerResponse.createBySuccess(0);
+        }
+        int count = cartMapper.selectCartProductCount(userId);
+        return ServerResponse.createBySuccess(count);
     }
 
     private CartVo getCartVoLimit(Integer userId){
@@ -104,6 +144,4 @@ public class CartServiceImpl implements ICartService {
         cartVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
         return cartVo;
     }
-
-
 }

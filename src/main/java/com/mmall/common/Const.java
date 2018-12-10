@@ -11,6 +11,8 @@ public class Const {
     public static final String CHECK_USERNAME = "username";
     public static final String CHECK_EMAIL = "email";
 
+    public static final Integer ZERO = 0;
+
     public interface ProductListOrderBy{
         Set<String> PRICE_ASC_DESC = Sets.newHashSet("price_desc","price_asc");
     }

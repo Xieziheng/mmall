@@ -2,6 +2,7 @@ package com.mmall.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mmall.common.Const;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.CategoryMapper;
 import com.mmall.pojo.Category;
@@ -35,7 +36,7 @@ public class CategoryServiceImpl implements ICategoryService {
         category.setStatus(true);
 
         int rowCount = categoryMapper.insert(category);
-        if(rowCount > 0){
+        if(rowCount > Const.ZERO){
             return ServerResponse.createBySuccess("新增品类成功");
         }
         return ServerResponse.createByErrorMessage("新增品类失败");
@@ -51,7 +52,7 @@ public class CategoryServiceImpl implements ICategoryService {
         category.setName(categoryName);
 
         int rowCount = categoryMapper.updateByPrimaryKeySelective(category);
-        if(rowCount > 0){
+        if(rowCount > Const.ZERO){
             return ServerResponse.createBySuccess("更新品类名成功");
         }
         return ServerResponse.createByErrorMessage("更新品类名失败");

@@ -39,7 +39,7 @@ public class ProductServiceImpl implements IProductService {
         if(product!=null){
             if(StringUtils.isNoneBlank(product.getSubImages())){
                 String[] subImageArray = product.getSubImages().split(",");
-                if(subImageArray.length>0){
+                if(subImageArray.length>Const.ZERO){
                     //拿子图组中第一个元素作为主图
                     product.setMainImage(subImageArray[0]);
                 }
@@ -47,13 +47,13 @@ public class ProductServiceImpl implements IProductService {
             int rowCount;
             if(product.getId()!=null){
                 rowCount = productMapper.updateByPrimaryKey(product);
-                if(rowCount>0){
+                if(rowCount>Const.ZERO){
                     return ServerResponse.createBySuccessMessage("更新产品成功");
                 }
                 return ServerResponse.createByErrorMessage("更新产品失败");
             }else {
                 rowCount = productMapper.insert(product);
-                if(rowCount>0){
+                if(rowCount>Const.ZERO){
                     return ServerResponse.createBySuccessMessage("新增产品成功");
                 }
                 return ServerResponse.createByErrorMessage("新增产品失败");
@@ -70,7 +70,7 @@ public class ProductServiceImpl implements IProductService {
         product.setId(productId);
         product.setStatus(status);
         int rowCount = productMapper.updateByPrimaryKeySelective(product);
-        if(rowCount>0){
+        if(rowCount>Const.ZERO){
             return ServerResponse.createBySuccessMessage("更改商品销售状态成功");
         }
         return ServerResponse.createByErrorMessage("更改商品销售状态失败");

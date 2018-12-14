@@ -3,6 +3,9 @@ package com.mmall.redis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.List;
+import java.util.Map;
+
 public class RedisManagerImpl implements IRedisManager {
 
     private JedisPool jedisPool = JedisManager.getInstance();
@@ -12,6 +15,7 @@ public class RedisManagerImpl implements IRedisManager {
         Jedis jedis = jedisPool.getResource();
         String result = jedis.set(key,value);
         jedis.close();
+        //jedisPool.close();
         return result;
     }
 
@@ -70,5 +74,28 @@ public class RedisManagerImpl implements IRedisManager {
         Long result = jedis.ttl(key);
         jedis.close();
         return result;
+    }
+
+    @Override
+    public Long del(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Long resultRow = jedis.del(key);
+        jedis.close();
+        return resultRow;
+    }
+
+    @Override
+    public Long hdel(String key, String... field) {
+        Jedis jedis = jedisPool.getResource();
+        Long resultRow = jedis.hdel(key,field);
+        jedis.close();
+        return resultRow;
+    }
+
+    public Map<String,String> hgetAll(String key){
+        Jedis jedis = jedisPool.getResource();
+        Map<String,String> resultMap = jedis.hgetAll(key);
+        jedis.close();
+        return resultMap;
     }
 }

@@ -9,6 +9,7 @@ import com.mmall.dao.CartMapper;
 import com.mmall.dao.ProductMapper;
 import com.mmall.pojo.Cart;
 import com.mmall.pojo.Product;
+import com.mmall.redis.CartRedisManager;
 import com.mmall.service.ICartService;
 import com.mmall.util.BigDecimalUtil;
 import com.mmall.util.PropertiesUtil;
@@ -18,6 +19,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -28,12 +30,15 @@ public class CartServiceImpl implements ICartService {
     CartMapper cartMapper;
     @Autowired
     ProductMapper productMapper;
+    @Resource
+    CartRedisManager cartRedisManager;
 
     public ServerResponse<CartVo> add(Integer userId, Integer productId, Integer count){
         if(productId == null || count == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_AUGUMENT.getCode(),ResponseCode.ILLEGAL_AUGUMENT.getDesc());
         }
-        Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
+        //Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
+        Cart cart = cartRedisManager.getCart(userId,productId);
         if(cart == null){
             //该产品不在购物车中
             Cart cartItem = new Cart();
@@ -41,11 +46,13 @@ public class CartServiceImpl implements ICartService {
             cartItem.setChecked(Const.Cart.CHECKED);
             cartItem.setProductId(productId);
             cartItem.setUserId(userId);
-            cartMapper.insert(cartItem);
+            //cartMapper.insert(cartItem);
+            cartRedisManager.insertCart(cartItem);
         }else {
             //购物车中已有，数量叠加
             cart.setQuantity(count+cart.getQuantity());
-            cartMapper.updateByPrimaryKeySelective(cart);
+            //cartMapper.updateByPrimaryKeySelective(cart);
+            cartRedisManager.updateCart(cart);
         }
         return this.list(userId);
     }
@@ -54,11 +61,13 @@ public class CartServiceImpl implements ICartService {
         if(productId == null || count == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_AUGUMENT.getCode(),ResponseCode.ILLEGAL_AUGUMENT.getDesc());
         }
-        Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
+        //Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
+        Cart cart = cartRedisManager.getCart(userId,productId);
         if(cart!=null){
             cart.setQuantity(count);
         }
-        cartMapper.updateByPrimaryKeySelective(cart);
+        //cartMapper.updateByPrimaryKeySelective(cart);
+        cartRedisManager.updateCart(cart);
         return this.list(userId);
     }
 
@@ -73,7 +82,8 @@ public class CartServiceImpl implements ICartService {
         if(CollectionUtils.isEmpty(productList)){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_AUGUMENT.getCode(),ResponseCode.ILLEGAL_AUGUMENT.getDesc());
         }
-        cartMapper.deleteByUserIdProductIds(userId,productList);
+        //cartMapper.deleteByUserIdProductIds(userId,productList);
+        cartRedisManager.delCarts(userId,productList);
         return this.list(userId);
     }
 

@@ -1,5 +1,7 @@
 package com.mmall.redis;
 
+import java.util.Map;
+
 public interface IRedisManager {
 
     String set(String key, String value);
@@ -17,4 +19,10 @@ public interface IRedisManager {
     Long expire(String key, int second) ;
 
     Long ttl(String key) ;
+
+    Long del(String key);
+
+    Long hdel(String key, String... field);
+
+    Map<String,String> hgetAll(String key);
 }

@@ -88,7 +88,8 @@ public class CartServiceImpl implements ICartService {
     }
 
     public ServerResponse<CartVo> selectOrUnSelect(Integer userId, Integer checked, Integer productId){
-        cartMapper.checkedOrUnCheckedProduct(userId,checked,productId);
+        //cartMapper.checkedOrUnCheckedProduct(userId,checked,productId);
+        cartRedisManager.selectOrUnSelect(userId,checked,productId);
         return this.list(userId);
     }
 
@@ -96,13 +97,15 @@ public class CartServiceImpl implements ICartService {
         if(userId == null){
             return ServerResponse.createBySuccess(0);
         }
-        int count = cartMapper.selectCartProductCount(userId);
+        //int count = cartMapper.selectCartProductCount(userId);
+        int count = cartRedisManager.selectCartProductCount(userId);
         return ServerResponse.createBySuccess(count);
     }
 
     private CartVo getCartVoLimit(Integer userId){
         CartVo cartVo = new CartVo();
-        List<Cart> cartList = cartMapper.selectCartByUserId(userId);
+        //List<Cart> cartList = cartMapper.selectCartByUserId(userId);
+        List<Cart> cartList = cartRedisManager.getCartListByUserId(userId);
         List<CartProductVo> cartProductVoList = Lists.newArrayList();
 
         BigDecimal cartTotalPrice = new BigDecimal("0");

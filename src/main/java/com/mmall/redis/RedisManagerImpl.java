@@ -1,11 +1,13 @@
 package com.mmall.redis;
 
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.List;
 import java.util.Map;
 
+@Service("iRedisManager")
 public class RedisManagerImpl implements IRedisManager {
 
     private JedisPool jedisPool = JedisManager.getInstance();
@@ -15,7 +17,6 @@ public class RedisManagerImpl implements IRedisManager {
         Jedis jedis = jedisPool.getResource();
         String result = jedis.set(key,value);
         jedis.close();
-        //jedisPool.close();
         return result;
     }
 
@@ -97,5 +98,33 @@ public class RedisManagerImpl implements IRedisManager {
         Map<String,String> resultMap = jedis.hgetAll(key);
         jedis.close();
         return resultMap;
+    }
+
+    public Long lpush(String key,String value){
+        Jedis jedis = jedisPool.getResource();
+        Long resultRow = jedis.lpush(key,value);
+        jedis.close();
+        return resultRow;
+    }
+
+    public List<String> lrange(String key, Long start, Long stop){
+        Jedis jedis = jedisPool.getResource();
+        List<String> resultList = jedis.lrange(key,start,stop);
+        jedis.close();
+        return resultList;
+    }
+
+    public Long lrem(String key, Long count, String value){
+        Jedis jedis = jedisPool.getResource();
+        Long resultRow = jedis.lrem(key,count,value);
+        jedis.close();
+        return resultRow;
+    }
+
+    public Long hlen(String key){
+        Jedis jedis = jedisPool.getResource();
+        Long result = jedis.hlen(key);
+        jedis.close();
+        return result;
     }
 }

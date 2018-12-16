@@ -32,9 +32,9 @@ public class JedisManager {
     }
 
     public static JedisPool getInstance(){
-        if(jedisPool!=null){
+        if(jedisPool==null){
             synchronized (JedisManager.class){
-                if(jedisPool!=null){
+                if(jedisPool==null){
                     GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
                     poolConfig.setMaxIdle(MAX_IDLE);
                     poolConfig.setMaxTotal(MAX_TOTAL);

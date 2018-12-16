@@ -1,5 +1,6 @@
 package com.mmall.redis;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IRedisManager {
@@ -25,4 +26,12 @@ public interface IRedisManager {
     Long hdel(String key, String... field);
 
     Map<String,String> hgetAll(String key);
+
+    Long lpush(String key,String value);
+
+    List<String> lrange(String key, Long start, Long stop);
+
+    Long lrem(String key, Long count, String value);
+
+    Long hlen(String key);
 }

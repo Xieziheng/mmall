@@ -119,14 +119,14 @@
   <select id="selectCartByUserIdProductId" parameterType="map" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List"/>
-      from mmall_product
+      from mmall_cart
       where user_id = #{userId}
       and product_id = #{productId}
   </select>
   <select id="selectCartByUserId" resultMap="BaseResultMap" parameterType="int">
       select
       <include refid="Base_Column_List"/>
-      from mmall_product
+      from mmall_cart
       where user_id = #{userId}
   </select>
   <select id="selectCartCheckedStatusByUserId" resultType="int">

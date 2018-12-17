@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.mmall.dao.CartMapper;
 import com.mmall.pojo.Cart;
 import com.mmall.util.CommonUtils;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,13 @@ public class CartRedisManager{
         return resultRow.intValue();
     }
 
+    private Integer insertCartInRedis(Cart cart){
+        int userId = cart.getUserId();
+        int productId = cart.getProductId();
+        Long resultRow =  redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cart));
+        return resultRow.intValue();
+    }
+
     public Integer delCart(Integer userId, Integer productId){
         String userIdStr = CommonUtils.intToString(userId);
         String productIdStr = CommonUtils.intToString(productId);
@@ -96,22 +104,21 @@ public class CartRedisManager{
         return resultRow.intValue();
     }
 
-    /**
-     * 这里不得不在更新数据的时候两次访问mysql：
-     * 第一次写的时候，计划在更新数据的时候直接将redis缓存中的数据删除，
-     * 在查询时发现redis缓存不存在此条数据再去mysql搜索并加入redis缓存，
-     * 这种逻辑本来应该是最合理的，但是在设计时发现业务有冲突--业务中搜索一般都是批量查询，查userId下所有购物车产品的数据
-     * 但是在redis中我以userId作为key，productId作为field，然后再将整个Cart对象转成json报文作为value存入redis（哈希对象），
-     * 如果还是批量查询还是先查redis中缓存，会因为更新过的数据被删除而导致redis缓存的数据与mysql中的数据不同步现象，
-     * 为了满足业务中的批量查询，所以第二次改写的时候不得不在每次改变数据时（增删改）的时候保证redis缓存与mysql中数据的同步，
-     * 这样做其实相对很不合理，一是增加了繁琐的工作量，二是在业务逻辑特别复杂的情况下很容易出问题，
-     * 比如在这个updateCart方法中，我想避免二次访问mysql，但是发现cartMapper.updateByPrimaryKey(cart);中update_time字段的逻辑是在sql语句用sql内置函数做的，
-     * 如果我在此方法内调用new Date()作为update_time就很有可能造成redis缓存中与mysql中的同一条数据的数据不一致风险，
-     * 所以为了保证数据同步且一致，不得不在更新了数据后再次访问mysql取出数据然后再存入redis。
-     * 这样，本以提高效率为目的而加入的redis缓存在更新数据时却要比原来还要多一次访问mysql，
-     * 上述种种，主要原因是在设计redis缓存之初，没有想通透，导致了原有逻辑和新增逻辑的冲突，
-     * 后期看看有时间，找一个解决方案。
-     */
+    private Integer updateCartInRedis(Cart cart){
+        int userId = cart.getUserId();
+        int productId = cart.getProductId();
+        String cartJson = redisManager.hget(CommonUtils.intToString(userId),CommonUtils.intToString(productId));
+        Cart cartRedis = gson.fromJson(cartJson,Cart.class);
+        if(cart.getQuantity()!=null){
+            cartRedis.setQuantity(cart.getQuantity());
+        }
+        if(cart.getChecked()!=null){
+            cartRedis.setChecked(cart.getChecked());
+        }
+        Long resultRow = redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cartRedis));
+        return resultRow.intValue();
+    }
+
     public Integer updateCart(Cart cart){
         if(logger.isDebugEnabled()){
             logger.info("CartRedisManager cartCart Enter...");
@@ -119,16 +126,17 @@ public class CartRedisManager{
         cartMapper.updateByPrimaryKeySelective(cart);
         int userId = cart.getUserId();
         int productId = cart.getProductId();
-//        String cartJson = redisManager.hget(CommonUtils.intToString(userId),CommonUtils.intToString(productId));
-//        Cart cartRedis = gson.fromJson(cartJson,Cart.class);
-//        if(cart.getQuantity()!=null){
-//            cartRedis.setQuantity(cart.getQuantity());
-//        }
-//        if(cart.getChecked()!=null){
-//            cartRedis.setChecked(cart.getChecked());
-//        }
-        Cart cartNew = cartMapper.selectCartByUserIdProductId(userId,productId);
-        Long resultRow = redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cartNew));
+        String cartJson = redisManager.hget(CommonUtils.intToString(userId),CommonUtils.intToString(productId));
+        Cart cartRedis = gson.fromJson(cartJson,Cart.class);
+        if(cart.getQuantity()!=null){
+            cartRedis.setQuantity(cart.getQuantity());
+        }
+        if(cart.getChecked()!=null){
+            cartRedis.setChecked(cart.getChecked());
+        }
+
+        //Cart cartNew = cartMapper.selectCartByUserIdProductId(userId,productId);
+        Long resultRow = redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cartRedis));
         return resultRow.intValue();
     }
 
@@ -150,13 +158,17 @@ public class CartRedisManager{
         cartMapper.checkedOrUnCheckedProduct(userId,checked,productId);
         //全选productId为null
         if(productId==null){
-            List<Cart> cartList = cartMapper.selectCartByUserId(userId);
+            List<Cart> cartList = getCartListByUserId(userId);
             for(Cart cartItem : cartList){
-                insertCart(cartItem);
+                cartItem.setChecked(checked);
+                updateCartInRedis(cartItem);
             }
         }
-        //否则为单选
-        Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
-        insertCart(cart);
+        else {
+            //否则为单选
+            Cart cart = getCart(userId,productId);
+            cart.setChecked(checked);
+            updateCartInRedis(cart);
+        }
     }
 }

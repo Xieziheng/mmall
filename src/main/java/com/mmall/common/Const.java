@@ -1,6 +1,7 @@
 package com.mmall.common;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 
@@ -45,6 +46,58 @@ public class Const {
 
         public int getCode() {
             return code;
+        }
+    }
+
+    public enum OrderStatusEnum{
+        CANCELED(0,"已取消"),
+        NO_PAY(10,"未付款"),
+        PAID(20,"已付款"),
+        SHIPPED(40,"已发货"),
+        ORDER_SUCCESS(50,"订单完成"),
+        ORDER_CLOSE(60,"订单关闭");
+
+        private int code;
+        private String value;
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        OrderStatusEnum(int code, String value){
+            this.code = code;
+            this.value = value;
+        }
+    }
+
+    public interface AlipayCallback{
+        String WAIT_BUYER_PAY = "WAIT_BUYER_PAY";
+        String TRADE_SUCCESS = "TRADE_SUCCESS";
+
+        String RESPONSE_SUCCESS = "success";
+        String RESPONSE_FAILED = "failed";
+    }
+
+    public enum PayPlatformEnum{
+        ALIPAY(1,"支付宝");
+        private int code;
+        private String value;
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        PayPlatformEnum(int code, String value){
+            this.code = code;
+            this.value = value;
         }
     }
 }

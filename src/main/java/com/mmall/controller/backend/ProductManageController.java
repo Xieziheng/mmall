@@ -6,6 +6,7 @@ import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.Product;
 import com.mmall.pojo.User;
+import com.mmall.redis.SessionRedisManager;
 import com.mmall.service.IFileService;
 import com.mmall.service.IProductService;
 import com.mmall.service.IUserService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,16 +32,19 @@ import java.util.Map;
 public class ProductManageController {
 
     @Autowired
-    IUserService iUserService;
+    private IUserService iUserService;
     @Autowired
-    IProductService iProductService;
+    private IProductService iProductService;
     @Autowired
-    IFileService iFileService;
+    private IFileService iFileService;
+    @Resource
+    private SessionRedisManager sessionRedisManager;
 
     @RequestMapping("save.do")
     @ResponseBody
     public ServerResponse productSave(HttpSession session, Product product){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，请登录管理员");
         }
@@ -53,7 +58,8 @@ public class ProductManageController {
     @RequestMapping("set_sale_status.do")
     @ResponseBody
     public ServerResponse setSaleStatus(HttpSession session, Integer productId, Integer status){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，请登录管理员");
         }
@@ -67,7 +73,8 @@ public class ProductManageController {
     @RequestMapping("detail.do")
     @ResponseBody
     public ServerResponse getDetail(HttpSession session, Integer productId){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，请登录管理员");
         }
@@ -81,7 +88,8 @@ public class ProductManageController {
     @RequestMapping("list.do")
     @ResponseBody
     public ServerResponse getList(HttpSession session, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，请登录管理员");
         }
@@ -95,7 +103,8 @@ public class ProductManageController {
     @RequestMapping("search.do")
     @ResponseBody
     public ServerResponse productSearch(HttpSession session,String productName, Integer productId, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, @RequestParam(value = "pageSize",defaultValue = "10") Integer pageSize){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，请登录管理员");
         }
@@ -109,7 +118,8 @@ public class ProductManageController {
     @RequestMapping("upload.do")
     @ResponseBody
     public ServerResponse upload(HttpSession session, HttpServletRequest request,@RequestParam(value = "upload_file",required = false) MultipartFile file){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，请登录管理员");
         }
@@ -131,7 +141,8 @@ public class ProductManageController {
     @ResponseBody
     public Map richtextImgUpload(HttpSession session, HttpServletRequest request, @RequestParam(value = "upload_file",required = false) MultipartFile file, HttpServletResponse response){
         Map resultMap = Maps.newHashMap();
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user == null){
             resultMap.put("success",false);
             resultMap.put("msg","请登录账户");

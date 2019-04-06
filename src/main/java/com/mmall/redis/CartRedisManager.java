@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.mmall.dao.CartMapper;
 import com.mmall.pojo.Cart;
 import com.mmall.util.CommonUtils;
-import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
+import com.mmall.common.Const;
 
 @Service("cartRedisManager")
 public class CartRedisManager{
@@ -25,19 +25,19 @@ public class CartRedisManager{
     @Resource
     private CartMapper cartMapper;
 
-    Gson gson = new Gson();
+    private Gson gson = new Gson();
 
     public Cart getCart(Integer userId, Integer productId){
         if(logger.isDebugEnabled()){
             logger.info("CartRedisManager getCart Enter...");
         }
         Cart cart = null;
-        String cartJson = redisManager.hget(CommonUtils.intToString(userId),CommonUtils.intToString(productId));
+        String cartJson = redisManager.hget(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId));
 
         if(CommonUtils.isEmpty(cartJson)){
             cart = cartMapper.selectCartByUserIdProductId(userId,productId);
             if(cart!=null){
-                redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cart));
+                redisManager.hset(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cart));
             }
         }
         else {
@@ -51,7 +51,7 @@ public class CartRedisManager{
     }
 
     public List<Cart> getCartListByUserId(Integer userId){
-        Map<String,String> map = redisManager.hgetAll(CommonUtils.intToString(userId));
+        Map<String,String> map = redisManager.hgetAll(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId));
         List<Cart> cartList = null;
         if(CollectionUtils.isEmpty(map)){
             cartList = cartMapper.selectCartByUserId(userId);
@@ -78,21 +78,21 @@ public class CartRedisManager{
         //保持redis缓存中数据同步
         int userId = cart.getUserId();
         int productId = cart.getProductId();
-        Long resultRow =  redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cart));
+        Long resultRow =  redisManager.hset(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cart));
         return resultRow.intValue();
     }
 
     private Integer insertCartInRedis(Cart cart){
         int userId = cart.getUserId();
         int productId = cart.getProductId();
-        Long resultRow =  redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cart));
+        Long resultRow =  redisManager.hset(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cart));
         return resultRow.intValue();
     }
 
     public Integer delCart(Integer userId, Integer productId){
         String userIdStr = CommonUtils.intToString(userId);
         String productIdStr = CommonUtils.intToString(productId);
-        Long resultRow = redisManager.hdel(userIdStr,productIdStr);
+        Long resultRow = redisManager.hdel(Const.RedisKey.CART_KEY+userIdStr,productIdStr);
         return resultRow.intValue();
     }
 
@@ -100,14 +100,16 @@ public class CartRedisManager{
         //String[] productIdArray = (String[]) productIdList.toArray();
         String[] productIdArray = productIdList.toArray(new String[productIdList.size()]);
         String userIdStr = CommonUtils.intToString(userId);
-        Long resultRow = redisManager.hdel(userIdStr,productIdArray);
+        Long resultRow = redisManager.hdel(Const.RedisKey.CART_KEY+userIdStr,productIdArray);
+        //数据库同步删除
+        cartMapper.deleteByUserIdProductIds(userId,productIdList);
         return resultRow.intValue();
     }
 
     private Integer updateCartInRedis(Cart cart){
         int userId = cart.getUserId();
         int productId = cart.getProductId();
-        String cartJson = redisManager.hget(CommonUtils.intToString(userId),CommonUtils.intToString(productId));
+        String cartJson = redisManager.hget(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId));
         Cart cartRedis = gson.fromJson(cartJson,Cart.class);
         if(cart.getQuantity()!=null){
             cartRedis.setQuantity(cart.getQuantity());
@@ -115,7 +117,7 @@ public class CartRedisManager{
         if(cart.getChecked()!=null){
             cartRedis.setChecked(cart.getChecked());
         }
-        Long resultRow = redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cartRedis));
+        Long resultRow = redisManager.hset(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cartRedis));
         return resultRow.intValue();
     }
 
@@ -126,7 +128,7 @@ public class CartRedisManager{
         cartMapper.updateByPrimaryKeySelective(cart);
         int userId = cart.getUserId();
         int productId = cart.getProductId();
-        String cartJson = redisManager.hget(CommonUtils.intToString(userId),CommonUtils.intToString(productId));
+        String cartJson = redisManager.hget(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId));
         Cart cartRedis = gson.fromJson(cartJson,Cart.class);
         if(cart.getQuantity()!=null){
             cartRedis.setQuantity(cart.getQuantity());
@@ -136,7 +138,7 @@ public class CartRedisManager{
         }
 
         //Cart cartNew = cartMapper.selectCartByUserIdProductId(userId,productId);
-        Long resultRow = redisManager.hset(CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cartRedis));
+        Long resultRow = redisManager.hset(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId),CommonUtils.intToString(productId),gson.toJson(cartRedis));
         return resultRow.intValue();
     }
 
@@ -144,7 +146,7 @@ public class CartRedisManager{
         if(logger.isDebugEnabled()){
             logger.info("CartRedisManager cartCart Enter...");
         }
-        Long count = redisManager.hlen(CommonUtils.intToString(userId));
+        Long count = redisManager.hlen(Const.RedisKey.CART_KEY+CommonUtils.intToString(userId));
         if(count==null){
             return cartMapper.selectCartProductCount(userId);
         }

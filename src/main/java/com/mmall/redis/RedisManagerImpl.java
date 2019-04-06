@@ -7,7 +7,7 @@ import redis.clients.jedis.JedisPool;
 import java.util.List;
 import java.util.Map;
 
-@Service("iRedisManager")
+@Service
 public class RedisManagerImpl implements IRedisManager {
 
     private JedisPool jedisPool = JedisManager.getInstance();

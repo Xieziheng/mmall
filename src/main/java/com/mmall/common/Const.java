@@ -137,4 +137,9 @@ public class Const {
             throw new RuntimeException("未找到相应枚举");
         }
     }
+
+    public interface RedisKey{
+        String CART_KEY = "Cart";
+        String SESSION_KEY = "Session";
+    }
 }

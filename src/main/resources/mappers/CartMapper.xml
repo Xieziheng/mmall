@@ -148,7 +148,7 @@
       update_time = now()
       where user_id = #{userId}
       <if test="productId != null">
-          and produt_id = #{productId}
+          and product_id = #{productId}
       </if>
   </update>
   <select id="selectCartProductCount" parameterType="int" resultType="int">

@@ -8,6 +8,7 @@ import com.mmall.common.Const;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
+import com.mmall.redis.SessionRedisManager;
 import com.mmall.service.IOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Iterator;
@@ -30,11 +32,14 @@ public class OrderController {
 
     @Autowired
     private IOrderService iOrderService;
+    @Resource
+    private SessionRedisManager sessionRedisManager;
 
     @RequestMapping("pay.do")
     @ResponseBody
     public ServerResponse pay(HttpSession session, Long orderNo, HttpServletRequest request){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
@@ -82,7 +87,8 @@ public class OrderController {
     @RequestMapping("query_order_pay_status.do")
     @ResponseBody
     public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session, Long orderNo){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
@@ -92,7 +98,8 @@ public class OrderController {
     @RequestMapping("create.do")
     @ResponseBody
     public ServerResponse create(HttpSession session, Integer shippingId){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
@@ -102,7 +109,8 @@ public class OrderController {
     @RequestMapping("cancel.do")
     @ResponseBody
     public ServerResponse cancel(HttpSession session, Long orderNo){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
@@ -112,7 +120,8 @@ public class OrderController {
     @RequestMapping("get_order_cart_product.do")
     @ResponseBody
     public ServerResponse getOrderCartProduct(HttpSession session){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
@@ -122,7 +131,8 @@ public class OrderController {
     @RequestMapping("detail.do")
     @ResponseBody
     public ServerResponse detail(HttpSession session, Long orderNo){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }
@@ -132,7 +142,8 @@ public class OrderController {
     @RequestMapping("list.do")
     @ResponseBody
     public ServerResponse list(HttpSession session, @RequestParam(value = "pageSize",defaultValue = "1") int pageSize,@RequestParam(value = "pageNum",defaultValue = "10") int pageNum){
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        //User user = (User) session.getAttribute(Const.CURRENT_USER);
+        User user = sessionRedisManager.getSession();
         if(user==null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
         }

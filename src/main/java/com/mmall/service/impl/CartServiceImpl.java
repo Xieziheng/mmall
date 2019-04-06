@@ -27,11 +27,11 @@ import java.util.List;
 public class CartServiceImpl implements ICartService {
 
     @Autowired
-    CartMapper cartMapper;
+    private CartMapper cartMapper;
     @Autowired
-    ProductMapper productMapper;
+    private ProductMapper productMapper;
     @Resource
-    CartRedisManager cartRedisManager;
+    private CartRedisManager cartRedisManager;
 
     public ServerResponse<CartVo> add(Integer userId, Integer productId, Integer count){
         if(productId == null || count == null){
